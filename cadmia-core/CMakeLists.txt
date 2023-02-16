@@ -7,9 +7,11 @@ FATAL: In-source builds are not allowed.
 endif()
 
 cmake_minimum_required(VERSION 3.5)
-project(cadmia-core) # Project Name Here
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
+
+project(cadmia-core)
 
 find_package(wpilib REQUIRED)
 
-add_executable(cadmia-core src/cpp/main.cpp) # executable name as first parameter
+add_executable(cadmia-core src/cpp/main.cpp)
 target_link_libraries(cadmia-core cameraserver ntcore cscore wpiutil)
