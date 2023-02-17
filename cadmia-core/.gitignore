@@ -1,1 +1,3 @@
+# Ignore cmake generated folders
+.cache
 /build
