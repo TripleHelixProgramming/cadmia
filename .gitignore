@@ -1,1 +1,5 @@
+# Ignore cache
+.cache
+
+# Ignore clangd compile commands file
 compile_commands.json
