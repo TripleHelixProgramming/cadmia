@@ -30,10 +30,11 @@ endif("${isSystemDir}" STREQUAL "-1")
 
 project(cadmia-core)
 
-find_package(wpilib REQUIRED)
 
+# Link WPILib
+find_package(wpilib REQUIRED)
 add_executable(cadmia-core src/cpp/main.cpp)
-target_link_libraries(cadmia-core cameraserver ntcore cscore wpiutil)
+target_link_libraries(cadmia-core PUBLIC cameraserver ntcore cscore wpiutil)
 
 file(GLOB_RECURSE src/*.cpp)
 # add_library(cadmia-core ${cadmia-core_src})
