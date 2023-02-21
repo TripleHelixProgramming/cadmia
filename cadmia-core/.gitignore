@@ -1,3 +1,2 @@
-# Ignore cmake generated folders
-.cache
-/build
+# Ignore pycache
+__pycache__

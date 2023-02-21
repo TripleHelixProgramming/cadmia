@@ -1,8 +1,12 @@
 import cv2 as cv
+from stream import Stream
 
 # Runnable application file of cadmia
 
 def main():
+    # Initialize video stream
+    stream = Stream(5800)
+
     # Get all available cameras
     cameras = []
     for camera_port in range(10):
@@ -30,6 +34,7 @@ def main():
 
         # Display camera streams
         img = cv.hconcat(frames)
+        stream.set_frame(img)
         cv.imshow('stream', img)
 
         if cv.waitKey(1) & 0xFF == ord('q'):
