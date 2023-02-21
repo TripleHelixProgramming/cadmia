@@ -3,3 +3,6 @@
 
 # Ignore clangd compile commands file
 compile_commands.json
+
+# Ignore python virtual enviornment
+/venv
