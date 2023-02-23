@@ -1,19 +1,20 @@
 import cv2 as cv
 from stream import Stream
+import imutils
 
 # Runnable application file of cadmia
 
 def main():
     # Initialize video stream
-    stream = Stream(5800)
+    stream = Stream()
 
     # Get all available cameras
-    cameras = []
-    for camera_port in range(10):
-        cap = cv.VideoCapture("/dev/video" + str(camera_port))
-        # If camera exists, add it to the list of stored cameras
-        if (cap.isOpened()):
-            cameras.append(cap)
+    cameras = [cv.VideoCapture(0)]
+    # for camera_port in range(10)
+    #     cap = cv.VideoCapture("/dev/video" + str(camera_port))
+    #     # If camera exists, add it to the list of stored cameras
+    #     if (cap.isOpened()):
+    #         cameras.append(cap)
 
     while True:
         # Capture camera frames
@@ -32,8 +33,10 @@ def main():
             corners, ids, _ = detector.detectMarkers(frame)
             cv.aruco.drawDetectedMarkers(frame, corners, ids)
 
-        # Display camera streams
-        img = cv.hconcat(frames)
+        # # Display camera streams
+        # for frame in frames:
+        #     frame = imutils.resize(frame, width=320)
+        img = cv.hconcat([imutils.resize(frames[0], width=320)])
         stream.set_frame(img)
         cv.imshow('stream', img)
 
