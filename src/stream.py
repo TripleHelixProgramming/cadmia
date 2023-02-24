@@ -1,3 +1,4 @@
+from socketserver import ThreadingMixIn
 import cv2
 import numpy as np
 import threading
@@ -28,9 +29,12 @@ class Stream:
                             self.wfile.write('\r\n'.encode())
                         except KeyboardInterrupt:
                             break
+        
+        class ThreadedMJPEGStreamHandler(ThreadingMixIn, HTTPServer):
+            pass
 
         # Start the MJPEG stream server
-        mjpeg_server = HTTPServer(("", self.port), MJPEGStreamHandler)
+        mjpeg_server = ThreadedMJPEGStreamHandler(("", self.port), MJPEGStreamHandler)
         mjpeg_server_thread = threading.Thread(target=mjpeg_server.serve_forever)
         mjpeg_server_thread.daemon = True
         mjpeg_server_thread.start()
