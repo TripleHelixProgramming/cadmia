@@ -6,7 +6,7 @@ import imutils
 
 def main():
     # Initialize video stream
-    stream = Stream()
+    stream = Stream(8080)
 
     # Get all available cameras
     cameras = [cv.VideoCapture(0)]
@@ -33,15 +33,12 @@ def main():
             corners, ids, _ = detector.detectMarkers(frame)
             cv.aruco.drawDetectedMarkers(frame, corners, ids)
 
-        # # Display camera streams
-        # for frame in frames:
-        #     frame = imutils.resize(frame, width=320)
-        img = cv.hconcat([imutils.resize(frames[0], width=320)])
-        stream.set_frame(img)
-        cv.imshow('stream', img)
-
-        if cv.waitKey(1) & 0xFF == ord('q'):
-            break
+        # Display camera streams
+        resized_frames = []
+        for frame in frames:
+            resized_frames.append(imutils.resize(frame, width=320))
+        img = cv.hconcat(resized_frames)
+        stream.update_frame(img)
 
 if __name__ == "__main__":
     main()
