@@ -6,7 +6,7 @@ class NetworkTablesIO:
         self.inst = ntcore.NetworkTableInstance.getDefault()
         self.table = self.inst.getTable("cadmia")
         self.inst.startClient4("cadmia_client")
-        self.inst.setServer("192.168.1.153")
+        self.inst.setServer("localhost")
 
         self.publishers = []
         for index in range(5):

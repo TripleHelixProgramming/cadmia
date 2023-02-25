@@ -41,8 +41,7 @@ def main():
             corners, ids, _ = detector.detectMarkers(frame)
             cv.aruco.drawDetectedMarkers(frame, corners, ids)
             # Publish result to NetworkTables
-            if len(corners) > 0:
-                client.publish_result(index, time, corners, ids)
+            client.publish_result(index, time, corners, ids)
 
         # Display camera streams
         resized_frames = []
