@@ -20,6 +20,9 @@ def main():
     for camera_port in range(5):
         cap = cv.VideoCapture(camera_port)
         cameras.append(cap)
+
+    print("width:" + str(cameras[0].get(cv.CAP_PROP_FRAME_WIDTH)))
+    print("height:" + str(cameras[0].get(cv.CAP_PROP_FRAME_HEIGHT)))
     
     # Load tag map from json
     tag_map = pose_estimator.load_field_layout()
