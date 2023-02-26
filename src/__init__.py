@@ -4,6 +4,7 @@ import imutils
 import time
 from network_tables_io import NetworkTablesIO
 import pose_estimator
+from wpimath.geometry import *
 
 # Runnable application file of cadmia
 
@@ -50,6 +51,7 @@ def main():
 
             pose = None
             if ids is not None:
+                # tag_map = {1 : Pose3d(), 2 : Pose3d(Translation3d(-1.68, 0, 0), Rotation3d())}
                 pose = pose_estimator.solve_pose(calibration_map[index], corners, ids, tag_map)
                 if pose != None:
                     cv.putText(frame, str(pose.translation()), (5,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1)
