@@ -21,6 +21,9 @@ def main():
         cap = cv.VideoCapture(camera_port)
         cameras.append(cap)
 
+    cameras[0].set(cv.CAP_PROP_FRAME_WIDTH, 1240)
+    cameras[0].set(cv.CAP_PROP_FRAME_HEIGHT, 720)
+
     print("width:" + str(cameras[0].get(cv.CAP_PROP_FRAME_WIDTH)))
     print("height:" + str(cameras[0].get(cv.CAP_PROP_FRAME_HEIGHT)))
     
