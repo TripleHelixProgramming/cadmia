@@ -54,6 +54,9 @@ def solve_pose(corners, ids, tag_map):
     
     if image_points is None:
       return None
+    
+    if len(image_points) < 8:
+      return None
 
     _, rvec, tvec = cv.solvePnP(object_points, image_points, camera_matrix, dist_coeffs, flags=0)
 
