@@ -46,8 +46,8 @@ def solve_pose(calibration, corners, ids, tag_map):
       if id in tag_map.keys():
         if image_points is None:
           image_points = corners[tag_index][0]
-          # object_points = solve_tag_corners(tag_map[id])
-          object_points = solve_tag_corners(Pose3d())
+          object_points = solve_tag_corners(tag_map[id])
+          # object_points = solve_tag_corners(Pose3d())
         else:
           image_points = np.concatenate((image_points, corners[tag_index][0]), axis=0)
           object_points = np.concatenate((object_points, solve_tag_corners(tag_map[id])))
