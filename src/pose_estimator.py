@@ -4,15 +4,12 @@ from math import *
 from wpimath.geometry import *
 import json
 
-# Camera calibration constants
-camera_matrix = np.array([[742.483468466319, 0.0,              637.2421086110966], 
-                          [0.0,              741.833232408462, 401.5930628745256], 
-                          [0.0,              0.0,              1.0              ]])
-dist_coeffs = np.array([ 0.10050662325551381,
-                        -0.048995749738143635, 
-                        -0.0014568776758625078, 
-                         0.0012852294132110506,
-                        -0.15731800217755504])
+def load_calibration():
+  calibration_map = {}
+  calibration = json.load(open('assets/calibration.json'))
+  for constants in calibration['constants']:
+    calibration_map[constants['ID']] = [np.array(constants['extrinsics']), np.array(constants['distortion'])]
+  return calibration_map
 
 def load_field_layout():
   pose_map = {}
@@ -38,7 +35,7 @@ def solve_tag_corners(tag_pose):
                      solve_corner_to_object(-0.0762, +0.0762, tag_pose),
                      solve_corner_to_object(+0.0762, +0.0762, tag_pose)])
 
-def solve_pose(corners, ids, tag_map):
+def solve_pose(calibration, corners, ids, tag_map):
     # Estimate the pose using cv2.solvePnP
     image_points = None
     object_points = None
@@ -58,7 +55,7 @@ def solve_pose(corners, ids, tag_map):
     if len(image_points) < 8:
       return None
 
-    _, rvec, tvec = cv.solvePnP(object_points, image_points, camera_matrix, dist_coeffs, flags=0)
+    _, rvec, tvec = cv.solvePnP(object_points, image_points, calibration[0], calibration[1], flags=cv.SOLVEPNP_SQPNP)
 
     rotation_matrix, _ = cv.Rodrigues(rvec)
     translation_vector = -np.dot(np.transpose(rotation_matrix), tvec)
