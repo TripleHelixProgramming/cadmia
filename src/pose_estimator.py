@@ -31,10 +31,11 @@ def solve_corner_to_object(translation, tagPose):
   return translation_to_point3d(corner_translation)
 
 def solve_tag_corners(tag_pose):
-    return np.array([solve_corner_to_object(Translation3d(0, +0.0762, +0.0762), tag_pose),
+    return np.array([solve_corner_to_object(Translation3d(0, -0.0762, -0.0762), tag_pose),
+                     solve_corner_to_object(Translation3d(0, +0.0762, -0.0762), tag_pose),
+                     solve_corner_to_object(Translation3d(0, +0.0762, +0.0762), tag_pose),
                      solve_corner_to_object(Translation3d(0, -0.0762, +0.0762), tag_pose),
-                     solve_corner_to_object(Translation3d(0, -0.0762, -0.0762), tag_pose),
-                     solve_corner_to_object(Translation3d(0, +0.0762, -0.0762), tag_pose)])
+                     ])
 
 def solve_pose(calibration, corners, ids, tag_map):
     # Estimate the pose using cv2.solvePnP
