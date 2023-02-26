@@ -24,16 +24,17 @@ def load_field_layout():
 
 def translation_to_point3d(translation):
   return np.array([-translation.Y(), -translation.Z(), +translation.X()])
+  # return np.array([translation.Z(), -translation.X(), -translation.Y()])
 
-def solve_corner_to_object(cornerX, cornerY, tagPose):
-  corner_translation = tagPose.translation() + Translation3d(0, cornerX, cornerY).rotateBy(tagPose.rotation())
+def solve_corner_to_object(translation, tagPose):
+  corner_translation = tagPose.translation() + translation.rotateBy(tagPose.rotation())
   return translation_to_point3d(corner_translation)
 
 def solve_tag_corners(tag_pose):
-    return np.array([solve_corner_to_object(+0.0762, -0.0762, tag_pose),
-                     solve_corner_to_object(-0.0762, -0.0762, tag_pose),
-                     solve_corner_to_object(-0.0762, +0.0762, tag_pose),
-                     solve_corner_to_object(+0.0762, +0.0762, tag_pose)])
+    return np.array([solve_corner_to_object(Translation3d(0, +0.0762, +0.0762), tag_pose),
+                     solve_corner_to_object(Translation3d(0, -0.0762, +0.0762), tag_pose),
+                     solve_corner_to_object(Translation3d(0, -0.0762, -0.0762), tag_pose),
+                     solve_corner_to_object(Translation3d(0, +0.0762, -0.0762), tag_pose)])
 
 def solve_pose(calibration, corners, ids, tag_map):
     # Estimate the pose using cv2.solvePnP
@@ -44,7 +45,8 @@ def solve_pose(calibration, corners, ids, tag_map):
       if id in tag_map.keys():
         if image_points is None:
           image_points = corners[tag_index][0]
-          object_points = solve_tag_corners(tag_map[id])
+          # object_points = solve_tag_corners(tag_map[id])
+          object_points = solve_tag_corners(Pose3d())
         else:
           image_points = np.concatenate((image_points, corners[tag_index][0]), axis=0)
           object_points = np.concatenate((object_points, solve_tag_corners(tag_map[id])))

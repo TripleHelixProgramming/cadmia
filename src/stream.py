@@ -11,7 +11,7 @@ class Stream:
     def __init__(self, port):
         # Create a socket object
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_socket.bind(('127.0.0.1', 8000))
+        server_socket.bind(('10.23.63.11', 8000))
         server_socket.listen(0)
 
         clients = []
