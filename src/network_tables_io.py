@@ -16,11 +16,8 @@ class NetworkTablesIO:
     def get_time(self):
         return ntcore._now()
 
-    def publish_result(self, index, time, corners, ids):
-        result = []
-        for tag_index in range(len(corners)):
-            result.append(ids[tag_index][0])
-            for corner in corners[tag_index][0]:
-                result.append(corner[0])
-                result.append(corner[1])
+    def publish_result(self, index, time, pose):
+        t = pose.translation()
+        r = pose.rotation()
+        result = [t.X(), t.Y(), t.Z(), r.X(), r.Y(), r.Z()]
         self.publishers[index].set(result, time)
