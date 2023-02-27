@@ -1,7 +1,7 @@
 from network_tables_io import NetworkTablesIO
 from wpimath.geometry import *
-from stream import Stream
 import pose_estimator
+import cscore
 
 import cv2 as cv
 import imutils
@@ -10,11 +10,15 @@ import time
 # Runnable application file of cadmia
 
 def main():
-    # Initialize video stream
-    stream = Stream(8080)
-
     # Initialize NT4 client
     client = NetworkTablesIO()
+
+    # CameraServer
+    cscore.CameraServer.enableLogging()
+
+    outputSource = cscore.CvSource("cvsource", cscore.VideoMode.PixelFormat.kMJPEG, 320, 240, 30)
+    mjpegStream = cscore.MjpegServer("stream", 5800)
+    mjpegStream.setSource(outputSource)
 
     # Get all available cameras
     cameras = []
@@ -70,8 +74,8 @@ def main():
         resized_frames = []
         for frame in frames:
             resized_frames.append(imutils.resize(frame, width=320))
-        img = cv.hconcat(frames)
-        stream.update_frame(img)
+        img = cv.hconcat(resized_frames)
+        outputSource.putFrame(img)
 
 if __name__ == "__main__":
     try:
