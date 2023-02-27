@@ -72,21 +72,25 @@ def main():
                     # Publish result to NetworkTables
                     client.publish_result(index, time, pose)
 
-        # Concatenate camera streams into a single image
-        resized_frames = []
-        for frame in frames:
-            resized_frames.append(imutils.resize(frame, height=config['stream_resolution_height']))
-        img = cv.hconcat(resized_frames)
+        
 
-        # Display FPS
+        # Limit stream FPS 
         current_time = get_time()
-        fps = round(1.0 / (current_time - last_time), 1)
         if current_time - last_time > 0:
-            cv.putText(img, str(fps), (5,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
-        last_time = current_time
+            fps = round(1.0 / (current_time - last_time), 1)
+            if fps < config['stream_fps']:
+                # Concatenate camera streams into a single image
+                resized_frames = []
+                for frame in frames:
+                    resized_frames.append(imutils.resize(frame, height=config['stream_resolution_height']))
+                img = cv.hconcat(resized_frames)
 
-        # Stream resulting frame with cscore
-        outputSource.putFrame(img)
+                # Display FPS
+                cv.putText(img, str(fps), (5,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
+                last_time = current_time
+
+                # Stream resulting frame with cscore
+                outputSource.putFrame(img)
 
 if __name__ == "__main__":
     while True:
