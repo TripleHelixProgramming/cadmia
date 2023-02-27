@@ -32,6 +32,7 @@ def main():
     outputSource = cscore.CvSource("cvsource", cscore.VideoMode.PixelFormat.kMJPEG, 320, 240, 30)
     mjpegStream = cscore.MjpegServer("stream", 5800)
     mjpegStream.setSource(outputSource)
+    mjpegStream.setFPS(config['stream_fps'])
 
     # Get all available cameras
     cameras = []
@@ -72,25 +73,22 @@ def main():
                     # Publish result to NetworkTables
                     client.publish_result(index, time, pose)
 
-        
-
         # Limit stream FPS 
         current_time = get_time()
-        if current_time - last_time > 0:
-            fps = round(1.0 / (current_time - last_time), 1)
-            if fps < config['stream_fps']:
-                # Concatenate camera streams into a single image
-                resized_frames = []
-                for frame in frames:
-                    resized_frames.append(imutils.resize(frame, height=config['stream_resolution_height']))
-                img = cv.hconcat(resized_frames)
+        fps = round(1.0 / (current_time - last_time), 1)
 
-                # Display FPS
-                cv.putText(img, str(fps), (5,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
-                last_time = current_time
+        # Concatenate camera streams into a single image
+        resized_frames = []
+        for frame in frames:
+            resized_frames.append(imutils.resize(frame, height=config['stream_resolution_height']))
+        img = cv.hconcat(resized_frames)
 
-                # Stream resulting frame with cscore
-                outputSource.putFrame(img)
+        # Display FPS
+        cv.putText(img, str(fps), (5,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
+        last_time = current_time
+
+        # Stream resulting frame with cscore
+        outputSource.putFrame(img)
 
 if __name__ == "__main__":
     while True:
