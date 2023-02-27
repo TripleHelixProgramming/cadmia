@@ -15,9 +15,8 @@ def main():
     # Initialize NT4 client
     client = NetworkTablesIO()
 
-    # CameraServer
+    # CameraServer - access stream at 127.0.0.1:5800/?action=stream%22 or 10.23.63.11:5800/?action=stream%22
     cscore.CameraServer.enableLogging()
-
     outputSource = cscore.CvSource("cvsource", cscore.VideoMode.PixelFormat.kMJPEG, 320, 240, 30)
     mjpegStream = cscore.MjpegServer("stream", 5800)
     mjpegStream.setSource(outputSource)
@@ -35,7 +34,7 @@ def main():
     cameras = []
     for camera_port in range(5):
         cap = cv.VideoCapture(camera_port)
-        cap.set(cv.CAP_PROP_FRAME_WIDTH, config['capture_resolution'])
+        cap.set(cv.CAP_PROP_FRAME_WIDTH, config['capture_resolution_width'])
         cameras.append(cap)
 
     last_time = -1
@@ -65,7 +64,7 @@ def main():
             pose = None
             if ids is not None:
                 pose = pose_estimator.solve_pose(calibration_map[index], corners, ids, tag_map)
-                if pose != None:
+                if pose is not None:
                     cv.putText(frame, str(pose.rotation()), (2,100), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1)
                     # Publish result to NetworkTables
                     client.publish_result(index, time, pose)
@@ -73,7 +72,7 @@ def main():
         # Display camera streams
         resized_frames = []
         for frame in frames:
-            resized_frames.append(imutils.resize(frame, width=config['stream_resolution']))
+            resized_frames.append(imutils.resize(frame, height=config['stream_resolution_height']))
         img = cv.hconcat(resized_frames)
         outputSource.putFrame(img)
 

@@ -1,4 +1,5 @@
 {
-    "capture_resolution": 1280,
-    "stream_resolution": 320
+    "capture_resolution_width": 1280,
+    "stream_resolution_height": 180,
+    "debug": true
 }
