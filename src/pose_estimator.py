@@ -40,10 +40,10 @@ def solve_pose(calibration, corners, ids, tag_map):
     _, rvec, tvec = cv.solvePnP(object_points, image_points, calibration[0], calibration[1], flags=cv.SOLVEPNP_SQPNP)
 
     rotation_matrix, _ = cv.Rodrigues(rvec)
-    translation_vector = -np.dot(np.transpose(rotation_matrix), tvec)
+    translation_vector = -rotation_matrix.T @ tvec
 
     rot3d = Rotation3d(np.array([+rvec[2][0], -rvec[0][0], +rvec[1][0]]),
-                       sqrt(pow(rvec[0][0], 2) + pow(rvec[1][0], 2) + pow(rvec[2][0], 2)))
+                       np.hypot(rvec[0][0] + rvec[1][0] + rvec[2][0]))
 
     return Pose3d(Translation3d(+translation_vector[2], 
                                 -translation_vector[0], 
