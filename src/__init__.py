@@ -6,21 +6,15 @@ import cscore
 
 import cv2 as cv
 import imutils
-import time
 from datetime import datetime
+import time
 
 # Runnable application file of cadmia
 
+def get_time():
+    return time.time()
+
 def main():
-    # Initialize NT4 client
-    client = NetworkTablesIO()
-
-    # CameraServer - access stream at 127.0.0.1:5800/?action=stream%22 or 10.23.63.11:5800/?action=stream%22
-    cscore.CameraServer.enableLogging()
-    outputSource = cscore.CvSource("cvsource", cscore.VideoMode.PixelFormat.kMJPEG, 320, 240, 30)
-    mjpegStream = cscore.MjpegServer("stream", 5800)
-    mjpegStream.setSource(outputSource)
-
     # Load tag map from json
     tag_map = util.load_field_layout()
 
@@ -30,6 +24,15 @@ def main():
     # Load config
     config = util.load_json('assets/config.json')
 
+    # Initialize NT4 client
+    client = NetworkTablesIO(config['debug'])
+
+    # CameraServer - access stream at 127.0.0.1:5800/?action=stream%22 or 10.23.63.11:5800/?action=stream%22
+    cscore.CameraServer.enableLogging()
+    outputSource = cscore.CvSource("cvsource", cscore.VideoMode.PixelFormat.kMJPEG, 320, 240, 30)
+    mjpegStream = cscore.MjpegServer("stream", 5800)
+    mjpegStream.setSource(outputSource)
+
     # Get all available cameras
     cameras = []
     for camera_port in range(5):
@@ -37,7 +40,7 @@ def main():
         cap.set(cv.CAP_PROP_FRAME_WIDTH, config['capture_resolution_width'])
         cameras.append(cap)
 
-    last_time = -1
+    last_time = get_time()
 
     while True:
         # Capture camera frames
@@ -69,11 +72,20 @@ def main():
                     # Publish result to NetworkTables
                     client.publish_result(index, time, pose)
 
-        # Display camera streams
+        # Concatenate camera streams into a single image
         resized_frames = []
         for frame in frames:
             resized_frames.append(imutils.resize(frame, height=config['stream_resolution_height']))
         img = cv.hconcat(resized_frames)
+
+        # Display FPS
+        current_time = get_time()
+        fps = round(1.0 / (current_time - last_time), 1)
+        if current_time - last_time > 0:
+            cv.putText(img, str(fps), (5,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
+        last_time = current_time
+
+        # Stream resulting frame with cscore
         outputSource.putFrame(img)
 
 if __name__ == "__main__":
