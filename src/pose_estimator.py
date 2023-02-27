@@ -43,7 +43,7 @@ def solve_pose(calibration, corners, ids, tag_map):
     translation_vector = -rotation_matrix.T @ tvec
 
     rot3d = Rotation3d(np.array([+rvec[2][0], -rvec[0][0], +rvec[1][0]]),
-                       np.hypot(rvec[0][0] + rvec[1][0] + rvec[2][0]))
+                       sqrt(pow(rvec[0][0], 2) + pow(rvec[1][0], 2) + pow(rvec[2][0], 2)))
 
     return Pose3d(Translation3d(+translation_vector[2], 
                                 -translation_vector[0], 
