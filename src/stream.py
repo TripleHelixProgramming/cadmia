@@ -1,48 +1,43 @@
+from socketserver import ThreadingMixIn
+import cv2
 import numpy as np
 import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
-import socket
-import pickle
-import struct
 
 frame = None
 
 class Stream:
     def __init__(self, port):
-        # Create a socket object
-        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_socket.bind(('10.23.63.11', 8000))
-        server_socket.listen(0)
+        self.port = port
 
-        clients = []
-
-        def publish_frames():
-            global frame
-            # Start the video streaming loop
-            while True:
-                # Serialize the frame and send it to the client
-                data = pickle.dumps(frame)
-                message = struct.pack("I", len(data)) + data
-                for client in clients:
-                    try:
-                        client.sendall(message)
-                    except Exception as e:
-                        client.close()
-                        clients.remove(client)
+        class MJPEGStreamHandler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                global frame
+                if self.path == '/':
+                    self.send_response(200)
+                    self.send_header('Content-type','multipart/x-mixed-replace; boundary=--jpgboundary')
+                    self.end_headers()
+                    while True:
+                        try:
+                            _, img_encoded = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+                            self.wfile.write("--jpgboundary\r\n".encode())
+                            self.send_header('Content-type','image/jpeg')
+                            self.send_header('Content-length',str(len(img_encoded)))
+                            self.end_headers()
+                            self.wfile.write(img_encoded)
+                            self.wfile.write('\r\n'.encode())
+                        except KeyboardInterrupt:
+                            break
         
-        def update_clients():
-            while True:
-                # Accept a single client connection
-                client_socket, addr = server_socket.accept()
-                print('Connection from', addr)
+        class ThreadedMJPEGStreamHandler(ThreadingMixIn, HTTPServer):
+            pass
 
-                clients.append(client_socket)
-
-        # Start the thread to send frames to all clients
-        frame_thread = threading.Thread(target=publish_frames)
-        frame_thread.start()
-        client_thread = threading.Thread(target=update_clients)
-        client_thread.start()
+        # Start the MJPEG stream server
+        mjpeg_server = ThreadedMJPEGStreamHandler(("", self.port), MJPEGStreamHandler)
+        mjpeg_server_thread = threading.Thread(target=mjpeg_server.serve_forever)
+        mjpeg_server_thread.daemon = True
+        mjpeg_server_thread.start()
 
     def update_frame(self, new_frame):
         global frame

@@ -24,7 +24,6 @@ def load_field_layout():
 
 def translation_to_point3d(translation):
   return np.array([-translation.Y(), -translation.Z(), +translation.X()])
-  # return np.array([translation.Z(), -translation.X(), -translation.Y()])
 
 def solve_corner_to_object(translation, tagPose):
   corner_translation = tagPose.translation() + translation.rotateBy(tagPose.rotation())
@@ -47,7 +46,6 @@ def solve_pose(calibration, corners, ids, tag_map):
         if image_points is None:
           image_points = corners[tag_index][0]
           object_points = solve_tag_corners(tag_map[id])
-          # object_points = solve_tag_corners(Pose3d())
         else:
           image_points = np.concatenate((image_points, corners[tag_index][0]), axis=0)
           object_points = np.concatenate((object_points, solve_tag_corners(tag_map[id])))

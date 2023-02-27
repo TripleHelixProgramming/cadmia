@@ -1,7 +1,7 @@
 {
     "tags": [
       {
-        "ID": 1,
+        "ID": 6,
         "pose": {
           "translation": {
             "x": 0,
@@ -19,11 +19,11 @@
         }
       },
       {
-        "ID": 2,
+        "ID": 7,
         "pose": {
           "translation": {
-            "x": -1.68,
-            "y": 0,
+            "x": 0,
+            "y": 1.68,
             "z": 0
           },
           "rotation": {

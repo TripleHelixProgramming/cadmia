@@ -1,10 +1,11 @@
-import cv2 as cv
+from network_tables_io import NetworkTablesIO
+from wpimath.geometry import *
 from stream import Stream
+import pose_estimator
+
+import cv2 as cv
 import imutils
 import time
-from network_tables_io import NetworkTablesIO
-import pose_estimator
-from wpimath.geometry import *
 
 # Runnable application file of cadmia
 
@@ -21,7 +22,7 @@ def main():
         cap = cv.VideoCapture(camera_port)
         cameras.append(cap)
 
-    cameras[0].set(cv.CAP_PROP_FRAME_WIDTH, 1240)
+    cameras[0].set(cv.CAP_PROP_FRAME_WIDTH, 1280)
     cameras[0].set(cv.CAP_PROP_FRAME_HEIGHT, 720)
 
     print("width:" + str(cameras[0].get(cv.CAP_PROP_FRAME_WIDTH)))
@@ -32,6 +33,8 @@ def main():
 
     # Load calibration constants
     calibration_map = pose_estimator.load_calibration()
+
+    last_time = -1
 
     while True:
         # Capture camera frames
@@ -57,10 +60,8 @@ def main():
 
             pose = None
             if ids is not None:
-                # tag_map = {1 : Pose3d(), 2 : Pose3d(Translation3d(-1.68, 0, 0), Rotation3d())}
                 pose = pose_estimator.solve_pose(calibration_map[index], corners, ids, tag_map)
                 if pose != None:
-                    cv.putText(frame, str(pose.translation()), (5,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1)
                     cv.putText(frame, str(pose.rotation()), (2,100), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1)
                     # Publish result to NetworkTables
                     client.publish_result(index, time, pose)
@@ -78,5 +79,5 @@ if __name__ == "__main__":
     except Exception as Argument:
         # Log any exceptions thrown
         f = open("log.txt", "a")
-        f.write(str(Argument))
+        f.write(str(Argument) + "\n")
         f.close()
