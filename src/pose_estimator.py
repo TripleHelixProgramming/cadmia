@@ -2,25 +2,6 @@ import cv2 as cv
 import numpy as np
 from math import *
 from wpimath.geometry import *
-import json
-
-def load_calibration():
-  calibration_map = {}
-  calibration = json.load(open('assets/calibration.json'))
-  for constants in calibration['constants']:
-    calibration_map[constants['ID']] = [np.array(constants['extrinsics']), np.array(constants['distortion'])]
-  return calibration_map
-
-def load_field_layout():
-  pose_map = {}
-  field = json.load(open('assets/test.json'))
-  for object in field['tags']:
-    pose = object['pose']
-    translation = pose['translation']
-    quat = pose['rotation']['quaternion']
-    pose_map[object['ID']] = Pose3d(Translation3d(translation['x'], translation['y'], translation['z']), 
-                                    Rotation3d(Quaternion(quat['W'], quat['X'], quat['Y'], quat['Z'])))
-  return pose_map
 
 def translation_to_point3d(translation):
   return np.array([-translation.Y(), -translation.Z(), +translation.X()])

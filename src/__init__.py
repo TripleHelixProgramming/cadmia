@@ -1,11 +1,13 @@
 from network_tables_io import NetworkTablesIO
 from wpimath.geometry import *
+import util
 import pose_estimator
 import cscore
 
 import cv2 as cv
 import imutils
 import time
+from datetime import datetime
 
 # Runnable application file of cadmia
 
@@ -20,23 +22,21 @@ def main():
     mjpegStream = cscore.MjpegServer("stream", 5800)
     mjpegStream.setSource(outputSource)
 
+    # Load tag map from json
+    tag_map = util.load_field_layout()
+
+    # Load calibration constants
+    calibration_map = util.load_calibration()
+
+    # Load config
+    config = util.load_json('assets/config.json')
+
     # Get all available cameras
     cameras = []
     for camera_port in range(5):
         cap = cv.VideoCapture(camera_port)
+        cap.set(cv.CAP_PROP_FRAME_WIDTH, config['capture_resolution'])
         cameras.append(cap)
-
-    cameras[0].set(cv.CAP_PROP_FRAME_WIDTH, 1280)
-    cameras[0].set(cv.CAP_PROP_FRAME_HEIGHT, 720)
-
-    print("width:" + str(cameras[0].get(cv.CAP_PROP_FRAME_WIDTH)))
-    print("height:" + str(cameras[0].get(cv.CAP_PROP_FRAME_HEIGHT)))
-    
-    # Load tag map from json
-    tag_map = pose_estimator.load_field_layout()
-
-    # Load calibration constants
-    calibration_map = pose_estimator.load_calibration()
 
     last_time = -1
 
@@ -73,15 +73,19 @@ def main():
         # Display camera streams
         resized_frames = []
         for frame in frames:
-            resized_frames.append(imutils.resize(frame, width=320))
+            resized_frames.append(imutils.resize(frame, width=config['stream_resolution']))
         img = cv.hconcat(resized_frames)
         outputSource.putFrame(img)
 
 if __name__ == "__main__":
-    try:
-        main()
-    except Exception as Argument:
-        # Log any exceptions thrown
-        f = open("log.txt", "a")
-        f.write(str(Argument) + "\n")
-        f.close()
+    while True:
+        try:
+            main()
+        except Exception as Argument:
+            # Log any exceptions thrown
+            f = open("log.txt", "a")
+            f.write(str(datetime.now()) + ": " + str(Argument) + "\n")
+            f.close()
+        # If an error occurs, attempt to restart the vision server.
+        print("Error occured! Attempting to restart")
+        time.sleep(3)

@@ -9,3 +9,6 @@ compile_commands.json
 
 # Ignore pycache
 src/__pycache__
+
+# Ignore logs
+log.txt
