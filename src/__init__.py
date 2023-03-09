@@ -40,6 +40,9 @@ def main():
         cap = cv.VideoCapture(camera_port)
         cap.set(cv.CAP_PROP_FRAME_WIDTH, config['capture_resolution_width'])
         cameras.append(cap)
+    
+    print(cameras[0].get(cv.CAP_PROP_FRAME_WIDTH))
+    print(cameras[0].get(cv.CAP_PROP_FRAME_HEIGHT))
 
     last_time = get_time()
 
@@ -69,9 +72,11 @@ def main():
             if ids is not None:
                 pose = pose_estimator.solve_pose(calibration_map[index], corners, ids, tag_map)
                 if pose is not None:
-                    cv.putText(frame, str(pose.rotation()), (2,100), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1)
                     # Publish result to NetworkTables
+                    cv.putText(frame, str(pose.translation()), (5,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
+                    cv.putText(frame, str(pose.rotation()), (5,100), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
                     client.publish_result(index, time, pose)
+
 
         # Limit stream FPS 
         current_time = get_time()
@@ -84,7 +89,7 @@ def main():
         img = cv.hconcat(resized_frames)
 
         # Display FPS
-        cv.putText(img, str(fps), (5,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
+        # cv.putText(img, str(fps), (5,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
         last_time = current_time
 
         # Stream resulting frame with cscore

@@ -1,6 +1,6 @@
 {
     "capture_resolution_width": 1280,
-    "stream_resolution_height": 90,
+    "stream_resolution_height": 400,
     "stream_fps": 30,
     "debug": true
 }
