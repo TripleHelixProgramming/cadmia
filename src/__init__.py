@@ -39,6 +39,7 @@ def main():
     for camera_port in range(5):
         cap = cv.VideoCapture(camera_port)
         cap.set(cv.CAP_PROP_FRAME_WIDTH, config['capture_resolution_width'])
+        cap.set(cv.CAP_PROP_FRAME_WIDTH, config['capture_resolution_height'])
         cameras.append(cap)
     
     print(cameras[0].get(cv.CAP_PROP_FRAME_WIDTH))
