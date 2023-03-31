@@ -38,12 +38,14 @@ def main():
     cameras = []
     for camera_port in range(5):
         cap = cv.VideoCapture(camera_port)
-        cap.set(cv.CAP_PROP_FRAME_WIDTH, config['capture_resolution_width'])
-        cap.set(cv.CAP_PROP_FRAME_WIDTH, config['capture_resolution_height'])
+        # cap.set(cv.CAP_PROP_FRAME_WIDTH, config['capture_resolution_width'])
+        cap.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
+        cap.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
+        cap.set(cv.CAP_PROP_AUTO_EXPOSURE, 1)
+        cap.set(cv.CAP_PROP_EXPOSURE, 5)
         cameras.append(cap)
-    
-    print(cameras[0].get(cv.CAP_PROP_FRAME_WIDTH))
-    print(cameras[0].get(cv.CAP_PROP_FRAME_HEIGHT))
+        print(cap.get(cv.CAP_PROP_FRAME_WIDTH))
+        print(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
 
     last_time = get_time()
 
