@@ -20,6 +20,7 @@ class NetworkTablesIO:
         return ntcore._now()
 
     def publish_result(self, index, time, pose):
+        print("post")
         t = pose.translation()
         r = pose.rotation()
         result = [t.X(), t.Y(), t.Z(), r.X(), r.Y(), r.Z()]
