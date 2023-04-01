@@ -59,7 +59,8 @@ def main():
                 success, frame = camera.read()
                 if success:
                     frames.append(frame)
-                    capture_times.append(client.get_time())
+                    time = time.time_ns()
+                    capture_times.append(time)
         
         # Detect Aruco markers
         dictionary = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_APRILTAG_16h5)
@@ -75,10 +76,11 @@ def main():
             if ids is not None:
                 pose = pose_estimator.solve_pose(calibration_map[index], corners, ids, tag_map)
                 if pose is not None:
+                    latency = (time.time_ns() - time) / 1.0E9
                     # Publish result to NetworkTables
                     cv.putText(frame, str(pose.translation()), (5,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
                     cv.putText(frame, str(pose.rotation()), (5,100), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
-                    client.publish_result(index, time, pose)
+                    client.publish_result(index, latency, pose)
 
 
         # Limit stream FPS 

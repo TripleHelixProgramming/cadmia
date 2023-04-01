@@ -15,7 +15,7 @@ def load_calibration():
 
 def load_field_layout():
   pose_map = {}
-  field = load_json('assets/test.json')
+  field = load_json('assets/2023-chargedup.json')
   for object in field['tags']:
     pose = object['pose']
     translation = pose['translation']
