@@ -78,21 +78,12 @@ def main():
             corners, ids, _ = detector.detectMarkers(frame)
             cv.aruco.drawDetectedMarkers(frame, corners, ids)
 
-#            sleep()
-
             pose = None
             if ids is not None:
                 pose = pose_estimator.solve_pose(calibration_map[index], corners, ids, tag_map)
                 if pose is not None:
                     # Publish result to NetworkTables
-                    # cv.putText(frame, str(pose.translation()), (5,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
-                    # cv.putText(frame, str(pose.rotation()), (5,100), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
                     client.publish_result(index, time, pose)
-   #             else:
-#                    client.publish_result(index, time, Pose3d())
-  #          else:
- #              client.publish_result(index, time, Pose3d())
-
 
         # Limit stream FPS 
         current_time = get_time()
