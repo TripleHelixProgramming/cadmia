@@ -63,8 +63,12 @@ def main():
         for camera in cameras:
             if camera.isOpened():
                 time = client.get_time()
-                success, frame = camera.read()
-                if success:
+                camera.grab()
+                camera.grab()
+                camera.grab()
+                camera.grab()
+                if (camera.grab()):
+                    sucess, frame = camera.retrieve()
                     frames.append(frame)
                     capture_times.append(time)
         
