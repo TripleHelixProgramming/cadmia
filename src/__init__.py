@@ -99,17 +99,8 @@ def main():
         # cv.putText(img, str(fps), (5,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
         last_time = current_time
 
-        # # Stream resulting frame with cscore
-        # outputSource.putFrame(img)
-
-        # Display the resulting frame
-        cv.imshow('frame', img)
-        
-        # the 'q' button is set as the
-        # quitting button you may use any
-        # desired button of your choice
-        if cv.waitKey(1) & 0xFF == ord('q'):
-            break
+        # Stream resulting frame with cscore
+        outputSource.putFrame(img)
 
 if __name__ == "__main__":
     while True:
