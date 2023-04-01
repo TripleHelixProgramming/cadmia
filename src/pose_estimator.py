@@ -32,9 +32,11 @@ def solve_pose(calibration, corners, ids, tag_map):
           object_points = np.concatenate((object_points, solve_tag_corners(tag_map[id])))
     
     if image_points is None:
+      print("No corners detected")
       return None
     
     if len(image_points) < 8:
+      print("Less than eight corners detected")
       return None
 
     _, rvec, tvec = cv.solvePnP(object_points, image_points, calibration[0], calibration[1], flags=cv.SOLVEPNP_SQPNP)

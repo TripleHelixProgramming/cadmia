@@ -19,9 +19,8 @@ class NetworkTablesIO:
     def get_time(self):
         return ntcore._now()
 
-    def publish_result(self, index, time, pose):
-        print("post")
+    def publish_result(self, index, latency, pose):
         t = pose.translation()
         r = pose.rotation()
-        result = [t.X(), t.Y(), t.Z(), r.X(), r.Y(), r.Z()]
-        self.publishers[index].set(result, time)
+        result = [t.X(), t.Y(), t.Z(), r.X(), r.Y(), r.Z(), latency]
+        self.publishers[index].set(result)
