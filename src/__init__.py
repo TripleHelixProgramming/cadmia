@@ -48,7 +48,7 @@ def main():
         cap.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
         cap.set(cv.CAP_PROP_AUTO_EXPOSURE, 1)
         cap.set(cv.CAP_PROP_EXPOSURE, 5)
-        cap.set(cv.CAP_PROP_BUFFERSIZE, 0)
+        cap.set(cv.CAP_PROP_BUFFERSIZE, 1)
         cameras.append(cap)
         print(cap.get(cv.CAP_PROP_FRAME_WIDTH))
         print(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
@@ -63,9 +63,6 @@ def main():
         for camera in cameras:
             if camera.isOpened():
                 time = client.get_time()
-                camera.grab()
-                camera.grab()
-                camera.grab()
                 camera.grab()
                 if (camera.grab()):
                     sucess, frame = camera.retrieve()
