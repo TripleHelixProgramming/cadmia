@@ -19,8 +19,8 @@ jobs:
       - run: python -m virtualenv venv
 
       - run: |
-          chmod +x venv/bin/activate \
-          source venv/bin/activate \
+          chmod +x venv/bin/activate;\
+          source venv/bin/activate;\
           pip install -r requirements.txt \
 
       - uses: actions/upload-artifact@v3
