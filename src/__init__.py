@@ -11,8 +11,14 @@ import time
 
 # Runnable application file of cadmia
 
+def sleep():
+    time.sleep(1.0)
+
 def get_time():
     return time.time()
+
+def get_time_ns():
+    return time.time_ns()
 
 def main():
     # Load tag map from json
@@ -56,10 +62,10 @@ def main():
         capture_times = []
         for camera in cameras:
             if camera.isOpened():
+                time = client.get_time()
                 success, frame = camera.read()
                 if success:
                     frames.append(frame)
-                    time = time.time_ns()
                     capture_times.append(time)
         
         # Detect Aruco markers
@@ -72,15 +78,20 @@ def main():
             corners, ids, _ = detector.detectMarkers(frame)
             cv.aruco.drawDetectedMarkers(frame, corners, ids)
 
+#            sleep()
+
             pose = None
             if ids is not None:
                 pose = pose_estimator.solve_pose(calibration_map[index], corners, ids, tag_map)
                 if pose is not None:
-                    latency = (time.time_ns() - time) / 1.0E9
                     # Publish result to NetworkTables
-                    cv.putText(frame, str(pose.translation()), (5,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
-                    cv.putText(frame, str(pose.rotation()), (5,100), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
-                    client.publish_result(index, latency, pose)
+                    # cv.putText(frame, str(pose.translation()), (5,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
+                    # cv.putText(frame, str(pose.rotation()), (5,100), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
+                    client.publish_result(index, time, pose)
+   #             else:
+#                    client.publish_result(index, time, Pose3d())
+  #          else:
+ #              client.publish_result(index, time, Pose3d())
 
 
         # Limit stream FPS 
