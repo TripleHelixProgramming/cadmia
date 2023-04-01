@@ -1,0 +1,31 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-22
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - run: pip install virtualenv
+
+      - run: python -m virtualenv venv
+
+      - run: chmod +x venv/bin/activate;source venv/bin/activate
+
+      - run: pip install -r requirements.txt
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: venv
+          path: |
+            venv
+            src
+            assets
