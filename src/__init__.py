@@ -8,6 +8,7 @@ import cv2 as cv
 import imutils
 from datetime import datetime
 import time
+import traceback
 
 # Runnable application file of cadmia
 
@@ -56,19 +57,19 @@ def main():
         capture_times = []
         for camera in cameras:
             if camera.isOpened():
-                time = client.get_time()
+                captime = client.get_time()
                 camera.grab()
                 if (camera.grab()):
                     sucess, frame = camera.retrieve()
                     frames.append(frame)
-                    capture_times.append(time)
+                    capture_times.append(captime)
         
         # Detect Aruco markers
         dictionary = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_APRILTAG_16h5)
         parameters = cv.aruco.DetectorParameters()
         detector = cv.aruco.ArucoDetector(dictionary, parameters)
         for index in range(len(frames)):
-            time = capture_times[index]
+            captime = capture_times[index]
             frame = frames[index]
             corners, ids, _ = detector.detectMarkers(frame)
             cv.aruco.drawDetectedMarkers(frame, corners, ids)
@@ -78,7 +79,7 @@ def main():
                 pose = pose_estimator.solve_pose(calibration_map[index], corners, ids, tag_map)
                 if pose is not None:
                     # Publish result to NetworkTables
-                    client.publish_result(index, time, pose)
+                    client.publish_result(index, captime, pose)
 
         # Limit stream FPS 
         current_time = get_time()
@@ -104,7 +105,8 @@ if __name__ == "__main__":
         except Exception as Argument:
             # Log any exceptions thrown
             f = open("log.txt", "a")
-            f.write(str(datetime.now()) + ": " + str(Argument) + "\n")
+            tb = traceback.format_exc()
+            f.write(str(datetime.now()) + ": " + str(Argument) + tb + "\n")
             f.close()
         # If an error occurs, attempt to restart the vision server.
         print("Error occured! Attempting to restart")
