@@ -8,6 +8,7 @@ import cv2 as cv
 import imutils
 from datetime import datetime
 import time
+import traceback
 
 # Runnable application file of cadmia
 
@@ -59,15 +60,15 @@ def main():
                 success, frame = camera.read()
                 if success:
                     frames.append(frame)
-                    time = time.time_ns()
-                    capture_times.append(time)
+                    captime = time.time_ns()
+                    capture_times.append(captime)
         
         # Detect Aruco markers
         dictionary = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_APRILTAG_16h5)
         parameters = cv.aruco.DetectorParameters()
         detector = cv.aruco.ArucoDetector(dictionary, parameters)
         for index in range(len(frames)):
-            time = capture_times[index]
+            captime = capture_times[index]
             frame = frames[index]
             corners, ids, _ = detector.detectMarkers(frame)
             cv.aruco.drawDetectedMarkers(frame, corners, ids)
@@ -76,7 +77,7 @@ def main():
             if ids is not None:
                 pose = pose_estimator.solve_pose(calibration_map[index], corners, ids, tag_map)
                 if pose is not None:
-                    latency = (time.time_ns() - time) / 1.0E9
+                    latency = (time.time_ns() - captime) / 1.0E9
                     # Publish result to NetworkTables
                     cv.putText(frame, str(pose.translation()), (5,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
                     cv.putText(frame, str(pose.rotation()), (5,100), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
@@ -107,7 +108,8 @@ if __name__ == "__main__":
         except Exception as Argument:
             # Log any exceptions thrown
             f = open("log.txt", "a")
-            f.write(str(datetime.now()) + ": " + str(Argument) + "\n")
+            tb = traceback.format_exc()
+            f.write(str(datetime.now()) + ": " + str(Argument) + tb + "\n")
             f.close()
         # If an error occurs, attempt to restart the vision server.
         print("Error occured! Attempting to restart")
