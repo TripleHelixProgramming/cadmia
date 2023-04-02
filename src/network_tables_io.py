@@ -14,13 +14,13 @@ class NetworkTablesIO:
         self.publishers = []
         for index in range(5):
             self.publishers.append(self.table.getDoubleArrayTopic("video" + str(index)).publish(
-                ntcore.PubSubOptions(periodic=0, sendAll=True, keepDuplicates=True)))
-
+                ntcore.PubSubOptions(periodic=0.01, sendAll=True, keepDuplicates=True)))
+            
     def get_time(self):
         return ntcore._now()
 
-    def publish_result(self, index, latency, pose):
+    def publish_result(self, index, time, pose):
         t = pose.translation()
         r = pose.rotation()
-        result = [t.X(), t.Y(), t.Z(), r.X(), r.Y(), r.Z(), latency]
+        result = [t.X(), t.Y(), t.Z(), r.X(), r.Y(), r.Z(), time]
         self.publishers[index].set(result)

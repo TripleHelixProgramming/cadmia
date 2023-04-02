@@ -39,11 +39,11 @@ def main():
     cameras = []
     for camera_port in range(5):
         cap = cv.VideoCapture(camera_port)
-        # cap.set(cv.CAP_PROP_FRAME_WIDTH, config['capture_resolution_width'])
         cap.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
         cap.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
         cap.set(cv.CAP_PROP_AUTO_EXPOSURE, 1)
         cap.set(cv.CAP_PROP_EXPOSURE, 5)
+        cap.set(cv.CAP_PROP_BUFFERSIZE, 1)
         cameras.append(cap)
         print(cap.get(cv.CAP_PROP_FRAME_WIDTH))
         print(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
@@ -57,10 +57,11 @@ def main():
         capture_times = []
         for camera in cameras:
             if camera.isOpened():
-                success, frame = camera.read()
-                if success:
+                captime = client.get_time()
+                camera.grab()
+                if (camera.grab()):
+                    sucess, frame = camera.retrieve()
                     frames.append(frame)
-                    captime = time.time_ns()
                     capture_times.append(captime)
         
         # Detect Aruco markers
@@ -77,12 +78,8 @@ def main():
             if ids is not None:
                 pose = pose_estimator.solve_pose(calibration_map[index], corners, ids, tag_map)
                 if pose is not None:
-                    latency = (time.time_ns() - captime) / 1.0E9
                     # Publish result to NetworkTables
-                    cv.putText(frame, str(pose.translation()), (5,30), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
-                    cv.putText(frame, str(pose.rotation()), (5,100), cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 1, cv.LINE_AA)
-                    client.publish_result(index, latency, pose)
-
+                    client.publish_result(index, captime, pose)
 
         # Limit stream FPS 
         current_time = get_time()
