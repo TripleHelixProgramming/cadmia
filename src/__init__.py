@@ -11,14 +11,8 @@ import time
 
 # Runnable application file of cadmia
 
-def sleep():
-    time.sleep(1.0)
-
 def get_time():
     return time.time()
-
-def get_time_ns():
-    return time.time_ns()
 
 def main():
     # Load tag map from json
