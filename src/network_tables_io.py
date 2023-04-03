@@ -22,5 +22,5 @@ class NetworkTablesIO:
     def publish_result(self, index, time, pose):
         t = pose.translation()
         r = pose.rotation()
-        result = [t.X(), t.Y(), t.Z(), r.X(), r.Y(), r.Z(), time]
-        self.publishers[index].set(result)
+        result = [t.X(), t.Y(), t.Z(), r.X(), r.Y(), r.Z()]
+        self.publishers[index].set(result, time)

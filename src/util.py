@@ -1,10 +1,13 @@
 import json
 import numpy as np
+import pathlib
+import os
 
 from wpimath.geometry import *
 
 def load_json(filepath):
-  return json.load(open(filepath))
+  print((pathlib.Path(os.environ['CADMIA_PATH']) / filepath).resolve())
+  return json.load(open((pathlib.Path(os.environ['CADMIA_PATH']) / filepath).resolve()))
 
 def load_calibration():
   calibration_map = {}

@@ -3,6 +3,7 @@ from wpimath.geometry import *
 import util
 import pose_estimator
 import cscore
+import pathlib
 
 import cv2 as cv
 import imutils
@@ -16,6 +17,8 @@ def get_time():
     return time.time()
 
 def main():
+    print(pathlib.Path(__file__).parent.parent.resolve())
+
     # Load tag map from json
     tag_map = util.load_field_layout()
 
@@ -108,6 +111,7 @@ if __name__ == "__main__":
             tb = traceback.format_exc()
             f.write(str(datetime.now()) + ": " + str(Argument) + tb + "\n")
             f.close()
+            print(str(datetime.now()) + ": " + str(Argument) + tb + "\n")
         # If an error occurs, attempt to restart the vision server.
         print("Error occured! Attempting to restart")
         time.sleep(3)
